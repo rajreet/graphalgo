@@ -49,8 +49,11 @@ svg{
     text-align:center;
 }
 
-.btn{
+button{
     color:white;
+    padding:10px;
+    border-radius:5px;
+    border-style: none;
     background-color: #383F51;
     margin:20px;
 }
