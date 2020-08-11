@@ -1,20 +1,124 @@
 // alert('dfs!');
 var matrix = [...Array(20)].map(e => Array(20).fill(0));
 var nodes = new Array(20);
+var pos = new Array(20);
 nodes.fill(0);
 
-function runnodes()
-{
-    for(var i=0;i<20;i++)
-    {
-        if(nodes[i])
-            console.log(i+1);
+//nodes coordinates
+let coods=[
+    [50,70],
+    [195,50],
+    [65,180],
+    [190,195],
+    [275,125],
+    [400,75],
+    [425,200],
+    [300,275],
+    [150,300],
+    [60,400],
+    [250,390],
+    [464,357],
+    [563,158],
+    [655,327],
+    [739,128],
+    [825,398],
+    [769,259],
+    [850,200],
+    [550,300],
+    [850,80]
+];
+
+//shuffle function
+function shuffle(array) {
+    for (var i = array.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
     }
+}
+
+//add node in svg
+function addNode(val,x,y)
+{
+    const svg = d3.select('svg');
+
+    const g= svg.append('g')
+                .attr('id',"node"+val);
+
+    const c = g.append('circle')
+                .attr('cx',x)
+                .attr('cy',y)
+                .attr('r',25)
+                .style('fill','#F5F2B8')
+                .attr('stroke','#383F51')
+                .attr('stroke-width','2px');
+
+    const t =g.append('text')
+                .attr('x',x)
+                .attr('y',y+5)
+                .text(val)
+                .attr('fill','#383F51')
+                .attr('alignment-baseline',"central")
+                .attr('text-anchor','middle')
+                .attr('font-size','20px')
+                .style('font-weight','bold');
+
+}
+
+// add edge in svg
+function createEdge(x,y)
+{
+    if(!nodes[x])
+    {
+        cood=coods.pop();
+        // addNode(x+1,cood[0],cood[1]);
+        pos[x]=[];
+        pos[x][0]=cood[0];
+        pos[x][1]=cood[1];
+    }
+
+    if(!nodes[y])
+    {
+        cood=coods.pop();
+        
+        pos[y]=[];
+        pos[y][0]=cood[0];
+        pos[y][1]=cood[1];
+    }
+
+    const svg=d3.select('svg');
+    var x1=pos[x][0], y1=pos[x][1], x2=pos[y][0], y2=pos[y][1];
+
+    midx1=(x1+x2)/2;
+    midy1=(y1+y2)/2;
+    
+    toss =Math.floor(Math.random()*2);
+
+    // alert(toss);
+    if(toss)
+    {
+        midx1+=25;
+        midy1+=25;
+    }
+    else 
+    {
+        midx1-=25;
+        midy1-=25;
+    }
+    svg.append('path')
+        .attr('d','M '+x1+' '+y1+' '+'S '+midx1+' '+midy1+' '+x2+' '+y2)
+        .attr('stroke','black')
+        .attr('fill','none');
+
+    addNode(y+1,x2,y2);
+    addNode(x+1,x1,y1);
 }
 document.addEventListener('DOMContentLoaded',function(){
     var box=document.querySelector('#dfs');
     box.style.color='white';
     box.style.backgroundColor = '#383F51';
+    shuffle(coods);
 
     document.querySelector('#edgeform').onsubmit = function(){
         const start=document.querySelector('#start').value;
@@ -42,8 +146,12 @@ document.addEventListener('DOMContentLoaded',function(){
         }
 
         matrix[start-1][end-1]=1;
+        matrix[end-1][start-1]=1;
+        createEdge(start-1,end-1);
+
         nodes[start-1]=1;
         nodes[end-1]=1;
+
         const li = document.createElement('li');
         li.innerHTML=start+" "+end;
 
@@ -53,6 +161,6 @@ document.addEventListener('DOMContentLoaded',function(){
     };
 
     document.querySelector('#run').onclick=function(){
-        runnodes();
+        console.table(pos);
     };
 });

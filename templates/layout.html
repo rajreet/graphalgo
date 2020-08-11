@@ -4,6 +4,7 @@
     <head>
         <title>GraphAlgo</title>
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+        <script src="https://d3js.org/d3.v4.min.js"></script>
         <link rel="stylesheet" href="{{ url_for('static',filename='styles.css')}}" >
         {%block head%}{%endblock%}
     </head>
@@ -23,7 +24,8 @@
                 </div>
                 <div class="col-8" id="svg-wrapper">
                 <svg style="width:100%;">
-                    <circle cx="200" cy="200" r="50" style="fill:blue"/>
+                
+                    <!-- <circle cx="930" cy="595" r="5" style="fill:blue"/> -->
                 </svg>
                 </div>
                 <div class="col-2" id="input-wrapper">
