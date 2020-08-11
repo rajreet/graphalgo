@@ -1,0 +1,49 @@
+body{
+    margin:30px;
+    background-color: #DDDBF1;
+    color: #383F51
+}
+
+a{
+    color:#383F51;
+}
+#mainheading{
+    /* color:red; */
+    font-weight: bold;
+}
+
+svg{
+    height:600px;
+}
+
+#svg-wrapper{
+    border-style: solid;
+    background-color: white;
+    border-radius:10px;   
+}
+
+#algo-wrapper{
+    padding-right: 20px;
+}
+
+.algoheading{
+    text-align: center;
+}
+
+.algo{
+    /* border-style: solid; */
+    border-radius: 10px;
+    padding:20px;
+    margin-bottom: 5px;
+}
+
+.algo:hover{
+
+    color:white;
+    background-color: #383F51;
+    border-color: white;
+}
+
+#input-wrapper{
+    text-align:center;
+}
