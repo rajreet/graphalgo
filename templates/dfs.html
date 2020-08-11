@@ -5,5 +5,37 @@
 {% endblock %}
 
 {%block input%}
-<p>DFS</p>
+<h3>Add Edges</h3>
+<hr>
+<small>Add edges between graphs by choosing a start and end node. You can construct a graph upto 20 nodes.</small>
+<br><br>
+<form id="edgeform" action="#">
+    <div class="from-group row">
+        <div class="col-6">
+            <label class=>Start Node:</label>
+        </div>
+        <div class="col-6">
+            <input type="number" class="form-control" id="start" size="8">
+        </div>
+        <small id="starterror" style="color:red;" class="col-12"></small> 
+    </div>
+    <br>
+    <div class="from-group row">
+        <div class="col-6">
+            <label class=>End Node:</label>
+        </div>
+        <div class="col-6">
+            <input type="number" class="form-control" id="end" size="8"> 
+        </div>
+        <small id="enderror" style="color:red;" class="col-12"></small>
+    </div>
+
+    <button class="btn">Add Edge</button>
+</form>
+
+<h3>Edges:</h3>
+<ul id="edgelist"></ul>
+<small id="edgeerror" style="color:red;"></small>
+
+<button id="run" class="btn">Run Algorithm</button>
 {%endblock%}

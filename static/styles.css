@@ -1,5 +1,6 @@
 body{
     margin:30px;
+    margin-top: 10px;
     background-color: #DDDBF1;
     color: #383F51
 }
@@ -46,4 +47,14 @@ svg{
 
 #input-wrapper{
     text-align:center;
+}
+
+.btn{
+    color:white;
+    background-color: #383F51;
+    margin:20px;
+}
+
+.inpedge{
+    margin:20px;
 }
