@@ -52,16 +52,16 @@ function addNode(val,x,y)
                 .attr('id',`node${val-1}`);
 
     const c = g.append('circle')
-                .attr('cx',x)
-                .attr('cy',y)
+                .attr('cx',`${x}`)
+                .attr('cy',`${y}`)
                 .attr('r',25)
                 .style('fill','#F5F2B8')
                 .attr('stroke','#383F51')
                 .attr('stroke-width','2px');
 
     const t =g.append('text')
-                .attr('x',x)
-                .attr('y',y)
+                .attr('x',`${x}`)
+                .attr('y',`${y}`)
                 .text(val)
                 .attr('fill','#383F51')
                 .attr('alignment-baseline',"central")
@@ -113,7 +113,7 @@ function createEdge(x,y)
     }
     svg.append('path')
         .attr('id',`edge${x}${y}`)
-        .attr('d','M '+x1+' '+y1+' '+'S '+midx1+' '+midy1+' '+x2+' '+y2)
+        .attr('d',`M ${x1} ${y1} S ${midx1} ${midy1} ${x2} ${y2}`)
         .attr('stroke','black')
         .attr('fill','none');
 
