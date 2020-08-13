@@ -72,7 +72,7 @@ function addNode(val,x,y)
 }
 
 // add edge in svg
-function createEdge(x,y)
+function createEdge(x,y,undirected)
 {
     if(!nodes[x])
     {
@@ -98,29 +98,55 @@ function createEdge(x,y)
     midx1=(x1+x2)/2;
     midy1=(y1+y2)/2;
     
-    toss =Math.floor(Math.random()*2);
+    if(undirected)
+    {
+        toss =Math.floor(Math.random()*2);
+        if(toss)
+        {
+            midx1+=25;
+            midy1+=25;
+        }
+        else 
+        {
+            midx1-=25;
+            midy1-=25;
+        }
+        svg.append('path')
+            .attr('id',`edge${x}${y}`)
+            .attr('d',`M ${x1} ${y1} S ${midx1} ${midy1} ${x2} ${y2}`)
+            .attr('stroke','black')
+            .attr('fill','none');
+    }
 
-    // alert(toss);
-    if(toss)
+    else
     {
-        midx1+=25;
-        midy1+=25;
-    }
-    else 
-    {
-        midx1-=25;
-        midy1-=25;
-    }
-    svg.append('path')
+        svg.append('path')
         .attr('id',`edge${x}${y}`)
-        .attr('d',`M ${x1} ${y1} S ${midx1} ${midy1} ${x2} ${y2}`)
+        .attr('d',`M ${x1} ${y1} L ${x2} ${y2}`)
         .attr('stroke','black')
         .attr('fill','none');
-
-        
-        addNode(y+1,x2,y2);
     
-        addNode(x+1,x1,y1);
+        var m=(y2-y1)/(x2-x1);
+        var deg = Math.atan(m);
+        deg=(deg/Math.PI)*180;
+
+        if(x2<x1)
+        {
+        svg.append('polygon')
+            .attr('transform',`translate(${midx1} ${midy1}) rotate(${270+deg})`)
+            .attr('points',"0,0 -7,14 7,14");
+        }
+
+        else
+        {
+            svg.append('polygon')
+            .attr('transform',`translate(${midx1} ${midy1}) rotate(${90+deg})`)
+            .attr('points',"0,0 -7,14 7,14");
+        }
+    }
+    
+    addNode(y+1,x2,y2);
+    addNode(x+1,x1,y1);
 }
 
 //dfs function
@@ -154,6 +180,8 @@ document.addEventListener('DOMContentLoaded',function(){
         document.querySelector("#starterror").innerHTML="";
         document.querySelector("#enderror").innerHTML="";
 
+        var undirected=document.querySelector('#undirected').checked;
+
         if(start<1 || start>20)
         {
             document.querySelector("#starterror").innerHTML="Node Value must be between 1 and 20";
@@ -166,21 +194,27 @@ document.addEventListener('DOMContentLoaded',function(){
             return false;
         }
 
-        if(matrix[start-1][end-1])
+        if(matrix[start-1][end-1] || (undirected && matrix[end-1][start-1]))
         {
             document.querySelector("#edgeerror").innerHTML="You cannot add the same edge twice.";
             return false;
         }
 
         matrix[start-1][end-1]=1;
-        matrix[end-1][start-1]=1;
-        createEdge(start-1,end-1);
+
+        if(undirected)
+            matrix[end-1][start-1]=1;
+
+        createEdge(start-1,end-1,undirected);
 
         nodes[start-1]=1;
         nodes[end-1]=1;
 
         const li = document.createElement('li');
-        li.innerHTML=start+" "+end;
+        if(undirected)
+            li.innerHTML=start+" "+end+" Undirected";
+        else
+            li.innerHTML=start+" "+end+" Directed";
 
         document.querySelector("#edgelist").append(li);
         
@@ -220,6 +254,7 @@ document.addEventListener('DOMContentLoaded',function(){
     document.querySelector('#clear').onclick=function(){
         d3.selectAll('g').remove();
         d3.selectAll('path').remove();
+        d3.selectAll('polygon').remove();
 
         for(var i=0;i<20;i++)
         {
