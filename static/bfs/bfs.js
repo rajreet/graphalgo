@@ -247,6 +247,7 @@ document.addEventListener('DOMContentLoaded',function(){
                 BFS(i);
         }
 
+        window.scrollTo(0,0);
         for(var i=0;i<20;i++)
         {
             if(nodes[i])
@@ -276,6 +277,7 @@ document.addEventListener('DOMContentLoaded',function(){
             }
         }
 
+        window.scrollTo(0,0);
         document.querySelector('#edgelist').innerHTML="";
     };
 
