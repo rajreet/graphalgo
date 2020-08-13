@@ -1,11 +1,77 @@
 // alert('dfs!');
 var matrix = [...Array(20)].map(e => Array(20).fill(0));
+var wtmatrix = [...Array(20)].map(e => Array(20).fill(0));
 var nodes = new Array(20);
 var pos = new Array(20);
 var vis=new Array(20);
-var nodecount =new Array(20);
+var nodecount =[];
 nodes.fill(0);
 
+class PriorityQueue{
+    constructor()
+    {
+        this.items=[];
+    }
+
+    par(x)
+    {
+        if(x)
+            return Math.floor((x-1)/2);
+        return x;
+    }
+
+    pqpush(item,priority)
+    {
+        this.items.push([item,priority]);
+
+        var ind=this.items.length-1;
+
+        if(!ind)
+            return;
+
+        while(this.items[this.par(ind)][1]>priority)
+        {
+            [this.items[this.par(ind)],this.items[ind]]=[this.items[ind],this.items[this.par(ind)]];
+            ind=this.par(ind);
+        }
+    }
+
+    heapify(i)
+    {
+        var l =2*i +1;
+        var r =2*i +2;
+        var smallest=i;
+
+        if (l < this.items.length && this.items[l][1] < this.items[i][1]) 
+            smallest = l; 
+        if (r < this.items.length && this.items[r][1] < this.items[smallest][1]) 
+            smallest = r; 
+
+        if (smallest != i) 
+        { 
+            [this.items[i],this.items[smallest]]=[this.items[smallest],this.items[i]]; 
+            heapify(smallest); 
+        } 
+    }
+
+    pqpop()
+    {
+        var pqmin=this.items[0];
+        if(this.items.length>1)
+        {
+            this.items[0]=this.items.pop();
+            this.heapify(0);
+        }
+        else
+            this.items.pop();
+        return pqmin;
+    }
+
+    empty()
+    {
+        return this.items.length==0;
+    }
+}
 var counter=0;
 //nodes coordinates
 let coods=[
@@ -45,6 +111,7 @@ function shuffle(array) {
 function addNode(val,x,y)
 {
     d3.select(`#node${val-1}`).remove();
+    d3.select(`#dist${val-1}`).remove();
 
     const svg = d3.select('svg');
 
@@ -68,6 +135,28 @@ function addNode(val,x,y)
                 .attr('text-anchor','middle')
                 .attr('font-size','20px')
                 .style('font-weight','bold');
+
+
+            if(val!=1)
+            {
+                const d= g.append('text')
+                    .attr('id',`dist${val-1}`)
+                    .attr('x',x)
+                    .attr('y',y+40)
+                    .text(`Dist=INF`)
+                    .attr('text-anchor','middle');
+            }
+
+            
+            else
+            {
+                g.append('text')
+                    .attr('id',`dist${val-1}`)
+                    .attr('x',x)
+                    .attr('y',y+40)
+                    .text(`Dist=0`)
+                    .attr('text-anchor','middle');
+            }
 
 }
 
@@ -155,7 +244,7 @@ function createEdge(x,y,undirected,weight)
             .attr('x',midx1)
             .attr('y',midy1)
             .text(weight)
-            .attr('text-anchor','middle')
+    
             .attr('font-size','20px')
             .attr('font-weight','bold')
             .attr('fill','#7A918D');
@@ -165,22 +254,45 @@ function createEdge(x,y,undirected,weight)
 }
 
 //dfs function
-function DFS(node)
+function Djikstra()
 {
-    //apply transition
-    console.log(node);
-    vis[node]=1;
-    counter++;
+    var dist=new Array(20);
+    dist.fill(Infinity);
+    dist[0]=0;
 
-    nodecount[node]=counter;
+    var pq= new PriorityQueue;
+    pq.pqpush(0,0);
 
-    for(var i=0;i<20;i++)
+    // console.log(pq.items);
+    while(!pq.empty())
     {
-        if(matrix[node][i] && !vis[i])
-            DFS(i);
-    }
-}
+        
+        var top=pq.pqpop();
+        var node=top[0];
+        var d=top[1];
 
+        console.log(top);
+           
+        if(vis[node])
+            continue;
+        vis[node]=true;
+        nodecount.push(top);
+
+        for(var ch=0;ch<20;ch++)
+        {
+            if(matrix[node][ch])
+            {
+                if(dist[node]+wtmatrix[node][ch]<dist[ch])
+                {
+                    dist[ch]=dist[node]+wtmatrix[node][ch];
+                    pq.pqpush(ch,dist[ch]);
+                }
+            }
+        }
+    }
+
+    console.log(dist);
+}
 
 document.addEventListener('DOMContentLoaded',function(){
     var box=document.querySelector('#djikstra');
@@ -198,6 +310,10 @@ document.addEventListener('DOMContentLoaded',function(){
         var undirected=document.querySelector('#undirected').checked;
         var weight=document.querySelector('#weight').value;
 
+        if(weight=="")
+            weight=0;
+
+        weight=parseInt(weight);
         if(start<1 || start>20)
         {
             document.querySelector("#starterror").innerHTML="Node Value must be between 1 and 20";
@@ -217,10 +333,13 @@ document.addEventListener('DOMContentLoaded',function(){
         }
 
         matrix[start-1][end-1]=1;
+        wtmatrix[start-1][end-1]=weight;
 
         if(undirected)
+        {
             matrix[end-1][start-1]=1;
-
+            wtmatrix[end-1][start-1]=weight;
+        }
         createEdge(start-1,end-1,undirected,weight);
 
         nodes[start-1]=1;
@@ -245,33 +364,52 @@ document.addEventListener('DOMContentLoaded',function(){
                     .style('fill','#F5F2B8')
         counter=0;
         
-        //run dfs
-        for(var i=0;i<20;i++)
-        {
-            if(nodes[i] && !vis[i])
-                DFS(i);
-        }
+        //run djikstra
+        Djikstra();
+
+        var pq=new PriorityQueue;
+
+        pq.pqpush(1,9);
+        pq.pqpush(1,3);
+        pq.pqpush(1,7);
+        pq.pqpush(1,6);
+
+
 
         window.scrollTo(0,0);
-        for(var i=0;i<20;i++)
+        
+        while(nodecount.length)
         {
-            if(nodes[i])
-            {
-            const c = d3.select(`#node${i}`).select('circle');
+            var top=nodecount.shift();
+
+            d3.selectAll('circle').transition()
+            .delay(1000*counter)
+            .duration(1000)
+            .style('fill','#F5F2B8');
+
+            const c = d3.select(`#node${top[0]}`).select('circle');
                 c.transition()
-                .delay(1000*nodecount[i])
+                .delay(1000*counter)
                 .duration(1000)
                 .style('fill','#f35757');
-            }
+
+            d3.select(`#dist${top[0]}`).transition()
+            .delay(1000*counter)
+            .duration(2000)
+            .text(`Dist=${top[1]}`)
+            .attr('font-weight','bold');
+
+
+
+            counter++;
+        
         }
 
     };
 
     //clear graph
     document.querySelector('#clear').onclick=function(){
-        d3.selectAll('g').remove();
-        d3.selectAll('path').remove();
-        d3.selectAll('polygon').remove();
+        document.querySelector('svg').innerHTML="";
 
         for(var i=0;i<20;i++)
         {
@@ -281,6 +419,29 @@ document.addEventListener('DOMContentLoaded',function(){
                 matrix[i][j]=0;
             }
         }
+
+        coods=[
+            [50,70],
+            [195,50],
+            [65,180],
+            [190,195],
+            [275,125],
+            [400,75],
+            [425,200],
+            [300,275],
+            [150,300],
+            [60,400],
+            [250,390],
+            [464,357],
+            [563,158],
+            [655,327],
+            [739,128],
+            [825,398],
+            [769,259],
+            [850,200],
+            [550,300],
+            [850,80]
+        ];
 
         window.scrollTo(0,0);
         document.querySelector('#edgelist').innerHTML="";
