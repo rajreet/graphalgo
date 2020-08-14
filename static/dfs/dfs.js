@@ -229,6 +229,8 @@ document.addEventListener('DOMContentLoaded',function(){
                     .style('fill','#F5F2B8')
         counter=0;
         
+        document.querySelector('#edgebtn').disabled=true;
+        document.querySelector('#run').disabled=true;
         //run dfs
         for(var i=0;i<20;i++)
         {
@@ -248,6 +250,11 @@ document.addEventListener('DOMContentLoaded',function(){
                 .style('fill','#f35757');
             }
         }
+
+        setInterval(function(){
+            document.querySelector('#edgebtn').disabled=false;
+            document.querySelector('#run').disabled=false;
+        },1000*counter);
 
     };
 

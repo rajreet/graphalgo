@@ -5,6 +5,7 @@ var nodes = new Array(20);
 var pos = new Array(20);
 var vis=new Array(20);
 var nodecount =[];
+var pqstates=[];
 nodes.fill(0);
 
 class PriorityQueue{
@@ -50,7 +51,7 @@ class PriorityQueue{
         if (smallest != i) 
         { 
             [this.items[i],this.items[smallest]]=[this.items[smallest],this.items[i]]; 
-            heapify(smallest); 
+            this.heapify(smallest); 
         } 
     }
 
@@ -264,14 +265,17 @@ function Djikstra()
     pq.pqpush(0,0);
 
     // console.log(pq.items);
+    
     while(!pq.empty())
     {
-        
+        var copy=[...pq.items];
+        pqstates.push(copy);
+
         var top=pq.pqpop();
         var node=top[0];
         var d=top[1];
 
-        console.log(top);
+        // console.log(top);
            
         if(vis[node])
             continue;
@@ -298,7 +302,7 @@ document.addEventListener('DOMContentLoaded',function(){
     var box=document.querySelector('#djikstra');
     box.style.color='white';
     box.style.backgroundColor = '#383F51';
-    // shuffle(coods);
+    shuffle(coods);
 
     document.querySelector('#edgeform').onsubmit = function(){
         const start=document.querySelector('#start').value;
@@ -332,6 +336,9 @@ document.addEventListener('DOMContentLoaded',function(){
             return false;
         }
 
+        if(start==end)
+            return false;
+        
         matrix[start-1][end-1]=1;
         wtmatrix[start-1][end-1]=weight;
 
@@ -347,9 +354,9 @@ document.addEventListener('DOMContentLoaded',function(){
 
         const li = document.createElement('li');
         if(undirected)
-            li.innerHTML=start+" "+end+" Undirected";
+            li.innerHTML=start+" "+end+" weight("+weight+") Undirected";
         else
-            li.innerHTML=start+" "+end+" Directed";
+            li.innerHTML=start+" "+end+" weight("+weight+") Directed";
 
         document.querySelector("#edgelist").append(li);
         
@@ -363,48 +370,95 @@ document.addEventListener('DOMContentLoaded',function(){
         d3.selectAll('g').select('circle')
                     .style('fill','#F5F2B8')
         counter=0;
+        pqstates=[];
+        nodecount=[];
         
+        document.querySelector('#edgebtn').disabled=true;
+        document.querySelector('#run').disabled=true;
+        d3.select('#pq').remove();
+        d3.select('#pqtext').remove()
+
+        for(var i=0;i<20;i++)
+        {
+            const d= d3.select(`#dist${i}`);
+
+            if(i)
+                d.text('Dist=INF')
+                .attr('font-weight','normal');
+            else
+                d.text('Dist=0')
+                .attr('font-weight','normal');
+        }
+
+        d3.select('svg').append('text')
+                        .attr('id','pqtext')
+                        .attr('x',10)
+                        .attr('y',500)
+                        .text('Priority Queue (node, distance):')
+                        .attr('font-size','30px');
+
+        const pqt=d3.select('svg').append('g')
+                    .attr('id','pq');
         //run djikstra
         Djikstra();
 
-        var pq=new PriorityQueue;
-
-        pq.pqpush(1,9);
-        pq.pqpush(1,3);
-        pq.pqpush(1,7);
-        pq.pqpush(1,6);
-
-
-
+        console.log(pqstates);
         window.scrollTo(0,0);
         
-        while(nodecount.length)
+        while(pqstates.length)
         {
-            var top=nodecount.shift();
+            var pq=pqstates.shift();
+            console.log(pq);
+            
+            pqt.selectAll(`.pq${counter-1}`).transition()
+            .delay(2000*counter)
+            .duration(0)
+            .attr('font-size','0px');
 
-            d3.selectAll('circle').transition()
-            .delay(1000*counter)
-            .duration(1000)
-            .style('fill','#F5F2B8');
+            for(var i=0;i<pq.length;i++)
+            {
+                pqt.append('text')
+                    .attr('class',`pq${counter}`)
+                    .attr('x',10+(100*(i%9)))
+                    .attr('y',Math.floor((i/9))*50+550)
+                    .text(`(${pq[i][0]+1} , ${pq[i][1]}) `)
+                    .attr('font-size','0px');
+            }
 
-            const c = d3.select(`#node${top[0]}`).select('circle');
-                c.transition()
-                .delay(1000*counter)
+            pqt.selectAll(`.pq${counter}`).transition()
+                .delay(2000*counter)
                 .duration(1000)
-                .style('fill','#f35757');
+                .attr('font-size','20px');
 
-            d3.select(`#dist${top[0]}`).transition()
-            .delay(1000*counter)
-            .duration(2000)
-            .text(`Dist=${top[1]}`)
-            .attr('font-weight','bold');
+            if(pq[0]==nodecount[0])
+            {
+                var top=nodecount.shift();
 
+                d3.selectAll('circle').transition()
+                .delay(2000*counter)
+                .duration(1000)
+                .style('fill','#F5F2B8');
 
+                const c = d3.select(`#node${top[0]}`).select('circle');
+                    c.transition()
+                    .delay(2000*counter)
+                    .duration(1000)
+                    .style('fill','#f35757');
 
+                d3.select(`#dist${top[0]}`).transition()
+                .delay(2000*counter)
+                .duration(2000)
+                .text(`Dist=${top[1]}`)
+                .attr('font-weight','bold');
+            }
             counter++;
-        
         }
 
+        setInterval(function(){
+            document.querySelector('#edgebtn').disabled=false;
+            document.querySelector('#run').disabled=false;
+        },2000*counter);
+        // document.querySelector('#edgebtn').disabled=false;
     };
 
     //clear graph
