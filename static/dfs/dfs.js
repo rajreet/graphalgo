@@ -200,6 +200,8 @@ document.addEventListener('DOMContentLoaded',function(){
             return false;
         }
 
+        if(start==end)
+            return false;
         matrix[start-1][end-1]=1;
 
         if(undirected)
@@ -223,6 +225,7 @@ document.addEventListener('DOMContentLoaded',function(){
 
     //run algorithm
     document.querySelector('#run').onclick=function(){
+        
         //initialise
         vis.fill(0);
         d3.selectAll('g').select('circle')
@@ -260,9 +263,10 @@ document.addEventListener('DOMContentLoaded',function(){
 
     //clear graph
     document.querySelector('#clear').onclick=function(){
-        d3.selectAll('g').remove();
-        d3.selectAll('path').remove();
-        d3.selectAll('polygon').remove();
+        document.querySelector('svg').innerHTML="";
+
+        document.querySelector('#edgebtn').disabled=false;
+            document.querySelector('#run').disabled=false;
 
         for(var i=0;i<20;i++)
         {

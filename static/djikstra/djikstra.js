@@ -365,6 +365,7 @@ document.addEventListener('DOMContentLoaded',function(){
 
     //run algorithm
     document.querySelector('#run').onclick=function(){
+        
         //initialise
         vis.fill(0);
         d3.selectAll('g').select('circle')
@@ -454,6 +455,11 @@ document.addEventListener('DOMContentLoaded',function(){
             counter++;
         }
 
+        pqt.selectAll(`.pq${counter-1}`).transition()
+            .delay(2000*counter)
+            .duration(0)
+            .attr('font-size','0px');
+
         setInterval(function(){
             document.querySelector('#edgebtn').disabled=false;
             document.querySelector('#run').disabled=false;
@@ -464,7 +470,8 @@ document.addEventListener('DOMContentLoaded',function(){
     //clear graph
     document.querySelector('#clear').onclick=function(){
         document.querySelector('svg').innerHTML="";
-
+        document.querySelector('#edgebtn').disabled=false;
+        document.querySelector('#run').disabled=false;
         for(var i=0;i<20;i++)
         {
             nodes[i]=0;
