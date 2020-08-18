@@ -23,7 +23,8 @@ svg{
 #svg-wrapper{
     border-style: solid;
     background-color: white;
-    border-radius:10px;   
+    border-radius:10px;
+    height:800px;   
 }
 
 #algo-wrapper{

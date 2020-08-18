@@ -53,3 +53,86 @@
 <button id="clear" class='mybtn'>Clear Graph</button>
 
 {%endblock%}
+
+{% block code %}
+<p>A topological sort is an ordering of the nodes of a directed graph such that if
+    there is a path from node <span style="font-weight: bold;">a</span> to node <span style="font-weight: bold;">b</span>, then node <span style="font-weight: bold;">a</span> 
+    appears before node <span style="font-weight: bold;">b</span> in the
+    ordering.</p>
+<p>
+    An acyclic graph always has a topological sort. However, if the graph contains
+a cycle, it is not possible to form a topological sort, because no node of the cycle
+can appear before the other nodes of the cycle in the ordering. It turns out that
+depth-first search can be used to both check if a directed graph contains a cycle
+and, if it does not contain a cycle, to construct a topological sort.</p>
+
+
+<p>Note that a topological sort is not unique, and there can be several topological
+    sorts for a graph.</p>
+<br>
+<h4>Implementation</h4>
+<p> The idea is to go through the nodes of the graph and always begin a depth-first
+    search at the current node if it has not been processed yet. During the searches,
+    the nodes have three possible states:</p>
+<ul>
+    <li><span style="font-weight: bold;">state 0</span>: the node has not been processed (white)</li>
+    <li><span style="font-weight: bold;">state 1</span>: the node is under processing (yellow)</li>
+    <li><span style="font-weight: bold;">state 2</span>: the node has been processed (red)</li>
+</ul>
+
+<p>Initially, the state of each node is 0. When a search reaches a node for the
+    first time, its state becomes 1. Finally, after all successors of the node have been
+    processed, its state becomes 2.</p>
+<p>
+    If the graph contains a cycle, we will find this out during the search, because
+sooner or later we will arrive at a node whose state is 1. In this case, it is not
+possible to construct a topological sort.
+If the graph does not contain a cycle, we can construct a topological sort by
+adding each node to a list when the state of the node becomes 2. This list in
+reverse order is a topological sort.
+</p>
+<pre><code class="language-cpp">
+    //adjancency list 
+    vector &lt;int&gt; adj[N];
+
+    //to store ordering of nodes
+    vector &lt;int&gt; order;
+
+    //boolean to check for cycles
+    bool checkCycle=false;
+
+    //array to keep track of visited nodes
+    bool state[N];
+
+    void dfs(int s) {
+        state[s] = 1;
+
+        // process node s
+        for (auto u: adj[s]) {
+            if(!state[u])
+                dfs(u);
+            else if(state[u]==1)
+                checkCycle=true;
+        }
+
+        state[s]=2;
+        order.push_back(s);
+    }
+
+    int main()
+    {
+        //take input and run dfs
+
+        if(!checkCycle)
+        {
+            reverse(order.begin(),order.end());
+            //print order
+        }
+
+        else
+        {
+            //cycle detected.
+        }
+    }
+</code></pre>
+{% endblock %}

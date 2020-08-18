@@ -51,3 +51,51 @@
 <button id="clear" class='mybtn'>Clear Graph</button>
 
 {%endblock%}
+
+{% block code %}
+<p>Breadth-first search (BFS) visits the nodes in increasing order of their distance
+    from the starting node. Thus, we can calculate the distance from the starting
+    node to all other nodes using breadth-first search. However, breadth-first search
+    is more difficult to implement than depth-first search.</p>
+<p>
+    Breadth-first search goes through the nodes one level after another. First the
+search explores the nodes whose distance from the starting node is 1, then the
+nodes whose distance is 2, and so on. This process continues until all nodes have
+been visited.</p>
+
+<p> Almost all traversal problems can be solved by either DFS or BFS. Although DFS is preferred over BFS due to its simpler implementation,there
+    can be some problems where BFS is more intuitive and simpler to implement. For e.g, BFS visits each node with shortest distance from the starting node (provided the
+    edge weights are same), this can be useful when the problem involves shortest distances from the starting node.
+</p>
+<p>Time complexity is similar to DFS, <span style="font-weight: bold;">O(V+E)</span>.</p>
+<br>
+<h4>Implementation</h4>
+<p>Breadth-first search is more difficult to implement than depth-first search, because
+    the algorithm visits nodes in different parts of the graph. A typical implementation
+    is based on a queue that contains nodes. At each step, the next node
+    in the queue will be processed.
+    The following code assumes that the graph is stored as adjacency lists and
+    maintains the following data structures:</p>
+<pre class="language-markup"><code class="language-cpp">
+    queue &lt;int&gt; q;
+    //array to keep track of visited nodes
+    bool visited[N];
+    </code></pre>
+<p>The queue <span style="font-weight:bold;">q</span> contains nodes to be processed in increasing order of their
+    distance. New nodes are always added to the end of the queue, and the node at
+    the beginning of the queue is the next node to be processed. The array <span style="font-weight:bold;">visited</span>
+    indicates which nodes the search has already visited. The search can be implemented as follows, starting at node <span style="font-weight:bold;">x</span>:</p>    
+<pre class="language-markup"><code class="language-cpp">
+    visited[x] = true;
+    q.push(x);
+    while (!q.empty()) {
+        int s = q.front(); q.pop();
+        // process node s
+        for (auto u : adj[s]) {
+            if (visited[u]) continue;
+            visited[u] = true;
+            q.push(u);
+    }
+}
+</code></pre>
+{% endblock %}

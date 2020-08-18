@@ -37,7 +37,7 @@
         <div class="col-6">
             <input type="number" class="form-control" id="weight" size="8"> 
         </div>
-        <small id="weightrror" style="color:red;" class="col-12"></small>
+        <small id="weighterror" style="color:red;" class="col-12"></small>
     </div>
 
     <div class="form-group row">
@@ -62,3 +62,65 @@
 <button id="clear" class='mybtn'>Clear Graph</button>
 
 {%endblock%}
+
+{% block code %}
+<p>Dijkstra’s algorithm finds shortest paths from the starting node to all nodes of
+    the graph. The benefit of Dijsktra’s algorithm
+    is that it is more efficient and can be used for processing large graphs. However,
+    the algorithm requires that there are no negative weight edges in the graph.</p>
+<p>
+    Dijkstra’s algorithm maintains distances
+to the nodes and reduces them during the search. Dijkstra’s algorithm is efficient,
+because it only processes each edge in the graph once, using the fact that there
+are no negative edges.</p>
+
+<p> Let us consider how Dijkstra’s algorithm works in the following graph when the
+    starting node is node 1:</p>
+<p>At each step, Dijkstra’s algorithm selects a node that has not been processed
+    yet and whose distance is as small as possible. The first such node is node 1 with
+    distance 0. When a node is selected, the algorithm goes through all edges that start at
+    the node and reduces the distances using them.</p>
+<p>A remarkable property in Dijkstra’s algorithm is that whenever a node is
+    selected, its distance is final.</p>
+<br>
+<h4>Implementation</h4>
+<p>The following implementation of Dijkstra’s algorithm calculates the minimum
+    distances from a node x to other nodes of the graph. The graph is stored as
+    adjacency lists so that <span style="font-weight:bold;">adj[a]</span> contains a <span style="font-weight:bold;">pair (b,w)</span> always when there is an edge
+    from node <span style="font-weight:bold;">a</span> to node <span style="font-weight:bold;">b</span> with weight <span style="font-weight:bold;">w</span>.</p>
+<p>An efficient implementation of Dijkstra’s algorithm requires that it is possible
+    to efficiently find the minimum distance node that has not been processed. An
+    appropriate data structure for this is a priority queue that contains the nodes
+    ordered by their distances. Using a priority queue, the next node to be processed
+    can be retrieved in logarithmic time.</p>
+<p>In the following code, the priority queue <span style="font-weight:bold;">q</span> contains pairs of the form <span style="font-weight:bold;">(-d , x)</span>,
+    meaning that the current distance to node <span style="font-weight:bold;">x</span> is <span style="font-weight:bold;">d</span>. The array distance contains
+    the distance to each node, and the array processed indicates whether a node has
+    been processed. Initially the distance is <span style="font-weight:bold;">0</span> to x and <span style="font-weight:bold;">Infinity</span> to all other nodes.</p>
+<p>Time Complexity <span style="font-weight:bold;">O(V + E logE)</span></p>
+<pre><code class="language-cpp">
+    for (int i = 1; i <= n; i++) distance[i] = INF;
+
+    distance[x] = 0;
+    q.push({0,x});
+        
+    while (!q.empty()) {
+        int a = q.top().second; q.pop();
+
+        if (processed[a]) continue;
+        processed[a] = true;
+
+        for (auto u : adj[a]) {
+            int b = u.first, w = u.second;
+            if (distance[a]+w < distance[b]) {
+                distance[b] = distance[a]+w;
+                q.push({-distance[b],b});
+        }
+    }
+}
+</code></pre>
+<p>Note that the priority queue contains negative distances to nodes. The reason
+    for this is that the default version of the C++ priority queue finds maximum
+    elements, while we want to find minimum elements. By using negative distances,
+    we can directly use the default priority queue.</p>
+{% endblock %}

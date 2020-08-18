@@ -310,6 +310,7 @@ document.addEventListener('DOMContentLoaded',function(){
         document.querySelector("#edgeerror").innerHTML="";
         document.querySelector("#starterror").innerHTML="";
         document.querySelector("#enderror").innerHTML="";
+        document.querySelector("#weighterror").innerHTML="";
 
         var undirected=document.querySelector('#undirected').checked;
         var weight=document.querySelector('#weight').value;
@@ -318,6 +319,13 @@ document.addEventListener('DOMContentLoaded',function(){
             weight=0;
 
         weight=parseInt(weight);
+
+        if(weight<0)
+        {
+            document.querySelector("#weighterror").innerHTML="Weight cannot be negative.";
+            return false;
+        }
+
         if(start<1 || start>20)
         {
             document.querySelector("#starterror").innerHTML="Node Value must be between 1 and 20";
